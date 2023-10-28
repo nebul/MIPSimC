@@ -1,0 +1,32 @@
+cmake_minimum_required(VERSION 3.10)
+
+project(MIPSimC)
+
+# Check if SYSTEMC_HOME environment variable is set
+if(DEFINED ENV{SYSTEMC_HOME})
+  set(SYSTEMC_HOME $ENV{SYSTEMC_HOME})
+else()
+  message(FATAL_ERROR "SYSTEMC_HOME environment variable not set")
+endif()
+
+# Platform specific configurations
+if(WIN32)
+  set(SYSTEMC_INCLUDE_DIRS "${SYSTEMC_HOME}/src")
+  set(SYSTEMC_LIBRARY "${SYSTEMC_HOME}/msvc80/SystemC/Debug/systemc.lib")
+elseif(UNIX)
+  set(SYSTEMC_INCLUDE_DIRS "${SYSTEMC_HOME}/include")
+  set(SYSTEMC_LIBRARY "${SYSTEMC_HOME}/lib-linux/libsystemc.a")
+else()
+  message(FATAL_ERROR "Unsupported platform")
+endif()
+
+include_directories(${SYSTEMC_INCLUDE_DIRS})
+
+link_directories(${SYSTEMC_LIBRARY})
+
+set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
+add_executable(MIPSimC main.cpp)
+
+target_link_libraries(MIPSimC ${SYSTEMC_LIBRARY})
